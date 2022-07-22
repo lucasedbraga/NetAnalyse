@@ -31,7 +31,8 @@ print(results)
 v_pu_limit = 0.92
 v_calc = list(results.vm_pu)
 plt.figure(figsize=(15,5))
-plt.subplot(1,2,1)
+plt.suptitle('Tensões em pu')
+plt.subplot(1, 2, 1)
 plt.plot(np.ones(len(v_calc))*v_pu_limit, linestyle='dashed', color='red')
 plt.plot(v_calc, marker='o', color='blue')
 # Corrigindo
@@ -40,7 +41,7 @@ res_corrigido = pp.runpp(net)
 results_corrigido = net.res_bus
 v_calc_c = list(results_corrigido.vm_pu)
 print(results_corrigido)
-plt.subplot(1,2,2)
+plt.subplot(1, 2, 2)
 plt.plot(np.ones(len(v_calc_c))*v_pu_limit, linestyle='dashed', color='red')
 plt.plot(v_calc_c, marker='o', color='blue')
 plt.show()
