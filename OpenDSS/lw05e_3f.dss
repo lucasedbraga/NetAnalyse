@@ -1,0 +1,87 @@
+clear
+
+// Circuito representativo da interface entre a transmissão e a distribuição
+new circuit.lwo5 bus1 = sub basekv = 34.5 pu = 1.0005 MVAsc3 = 10000 MVAsc1 = 10000
+// MVAsc3 e MVAsc1 podem ser da mesma ordem, a menos que um "reator de neutro"seja usado
+
+// Alimentadores de distribuição
+new line.f1 phases = 3 switch = yes bus1 = sub bus2 = s1
+new line.f2 phases = 3 switch = yes bus1 = sub bus2 = s2
+
+// Tipos de trechos
+New linecode.tipo1 nphases = 3 BaseFreq = 60 
+~ rmatrix = (0.1738 | 0 0.1738 | 0 0 0.1738 ) 
+~ xmatrix = (0.2819 | 0 0.2819 | 0 0 0.2819 ) 
+~ units = km
+
+// Trechos de distribuição
+new line.s1_2 phases = 3 bus1 = s1 bus2 = 2 linecode = tipo1 length =   8.88 units = km
+new line.2_3  phases = 3  bus1 = 2  bus2 = 3 linecode = tipo1 length = 16.04 units = km
+new line.s1_4 phases = 3 bus1 = s2 bus2 = 4 linecode = tipo1 length =   7.34 units = km
+
+// Curva de carga
+New "LoadShape.cargas" npts = 1 interval = 1 mult = [ 1.0 ]
+
+// Cargas
+new load.2  phases = 3 kv = 34.5 conn = wye bus1 = 2 kw = 1870 kvar = 1160 model = 1 daily = cargas
+new load.3  phases = 3 kv = 34.5 conn = wye bus1 = 3 kw = 1360 kvar =   840 model = 1 daily = cargas
+new load.4  phases = 3 kv = 34.5 conn = wye bus1 = 4 kw = 2040 kvar = 1260 model = 1 daily = cargas
+
+// Chaves
+new swtcontrol.s1_2 SwitchedObj = line.s1_2 SwitchedTerm = 1 Action = c
+new swtcontrol.2_3   SwitchedObj = line.2_3  SwitchedTerm = 1 Action = c
+new swtcontrol.s1_4 SwitchedObj = line.s1_4 SwitchedTerm = 1 Action = c
+
+//edit swtcontrol.2_3 action=o
+
+// feeder head ends
+//new energymeter.f1 element=line.f1 terminal=1
+//new energymeter.f2 element=line.f2 terminal=1
+//new energymeter.f3 element=line.f3 terminal=1
+
+// Base de tensão de 34.5
+set voltagebases="34.5"
+calcvoltagebases
+
+//New monitor.bus4_voltage element=load.4 terminal=1 mode=0
+
+//New energymeter.line1_4 element=line.1_4 terminal=1 !Necessita ser um elemento power delivery
+
+//set mode = daily
+//set stepsize = 1h
+//set number = 24
+
+//buscoords civanlar_bus.csv
+
+// initially open tie switches
+//open line.5_11 1
+
+// Resolução
+solve
+
+// Relatórios de saída
+show voltages
+//show losses
+
+// plot circuit voltage
+// plot circuit current
+// plot circuit power
+// plot circuit losses
+
+// optimal tie switches
+// close line.5_11 1
+// close line.10_14 1
+// open line.9_11 1
+// open line.8_10 1
+// solve
+// show losses
+
+// meshed solution
+// close line.9_11 1
+// close line.8_10 1
+// solve
+// show losses
+
+//Export monitors bus4_voltage
+//Plot monitor object = bus4_voltage chanels=(1 3 5) bases = [13295 13295 13295]
+C:\Users\FADEPE4\Desktop\ListaExercicios-20180513T132635Z-001\ListaExercicios\8500-Node-Questao_2_3\master.dss
